@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Công Ty TNHH Điện Mặt Trời Hồi Xuân - Giải pháp năng lượng xanh cho tương lai bền vững tại Thanh Hóa">
+    <meta name="keywords" content="điện mặt trời, năng lượng xanh, solar energy, thanh hóa, hồi xuân">
+    <meta name="author" content="Hồi Xuân Solar">
+    <title>Điện Năng Lượng Mặt Trời Hồi Xuân - Giải Pháp Năng Lượng Xanh</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'><circle cx='25' cy='25' r='8' fill='%23FFD700'/><path d='M25 5 L27 15 L23 15 Z' fill='%23FFD700'/></svg>">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" as="image">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <svg width="50" height="50" viewBox="0 0 50 50" aria-label="Hồi Xuân Solar Logo">
+                    <!-- Sun rays -->
+                    <g class="sun-rays">
+                        <path d="M25 5 L27 15 L23 15 Z" fill="#FFD700"/>
+                        <path d="M25 35 L27 45 L23 45 Z" fill="#FFD700"/>
+                        <path d="M5 25 L15 27 L15 23 Z" fill="#FFD700"/>
+                        <path d="M35 25 L45 27 L45 23 Z" fill="#FFD700"/>
+                        <path d="M8 8 L15 15 L12 12 Z" fill="#FFD700"/>
+                        <path d="M35 35 L42 42 L39 39 Z" fill="#FFD700"/>
+                        <path d="M8 42 L15 35 L12 38 Z" fill="#FFD700"/>
+                        <path d="M35 8 L42 15 L39 12 Z" fill="#FFD700"/>
+                    </g>
+                    <!-- Sun core -->
+                    <circle cx="25" cy="25" r="8" fill="url(#sunGradient)"/>
+                    <!-- House -->
+                    <g class="house">
+                        <path d="M15 30 L25 20 L35 30 L35 40 L15 40 Z" fill="#4A90E2" stroke="#2C5AA0" stroke-width="1"/>
+                        <rect x="20" y="32" width="10" height="8" fill="#4A90E2" stroke="#2C5AA0" stroke-width="1"/>
+                        <rect x="22" y="34" width="2" height="2" fill="#87CEEB"/>
+                        <rect x="26" y="34" width="2" height="2" fill="#87CEEB"/>
+                        <!-- Solar panels -->
+                        <rect x="16" y="22" width="3" height="6" fill="#00CED1" stroke="#008B8B" stroke-width="0.5"/>
+                        <rect x="20" y="22" width="3" height="6" fill="#00CED1" stroke="#008B8B" stroke-width="0.5"/>
+                        <rect x="24" y="22" width="3" height="6" fill="#00CED1" stroke="#008B8B" stroke-width="0.5"/>
+                        <rect x="28" y="22" width="3" height="6" fill="#00CED1" stroke="#008B8B" stroke-width="0.5"/>
+                        <rect x="32" y="22" width="3" height="6" fill="#00CED1" stroke="#008B8B" stroke-width="0.5"/>
+                    </g>
+                    <defs>
+                        <linearGradient id="sunGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">Hồi Xuân Solar</span>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#home" class="nav-link" aria-label="Trang chủ">Trang Chủ</a></li>
+                <li><a href="#about" class="nav-link" aria-label="Giới thiệu">Giới Thiệu</a></li>
+                <li><a href="#services" class="nav-link" aria-label="Dịch vụ">Dịch Vụ</a></li>
+                <li><a href="#locations" class="nav-link" aria-label="Cơ sở">Cơ Sở</a></li>
+                <li><a href="#projects" class="nav-link" aria-label="Dự án">Dự Án</a></li>
+                <li><a href="#contact" class="nav-link" aria-label="Liên hệ">Liên Hệ</a></li>
+            </ul>
+            
+            <div class="hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="transparent-text">ĐIỆN NĂNG LƯỢNG</span>
+                <span class="transparent-text">MẶT TRỜI HỒI XUÂN</span>
+            </h1>
+            <p class="hero-subtitle transparent-text">
+                Giải pháp năng lượng xanh cho tương lai bền vững
+            </p>
+            <div class="hero-buttons">
+                <a href="#contact" class="btn btn-primary" aria-label="Liên hệ ngay">
+                    <i class="fas fa-phone"></i>
+                    Liên Hệ Ngay
+                </a>
+                <a href="#about" class="btn btn-secondary" aria-label="Tìm hiểu thêm">
+                    <i class="fas fa-info-circle"></i>
+                    Tìm Hiểu Thêm
+                </a>
+            </div>
+        </div>
+        <div class="scroll-indicator" aria-label="Cuộn xuống">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">Về Chúng Tôi</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Công Ty TNHH Điện Mặt Trời Hồi Xuân</h3>
+                    <p>Chúng tôi là đơn vị tiên phong trong lĩnh vực cung cấp giải pháp điện năng lượng mặt trời tại tỉnh Thanh Hóa. Với 4 cơ sở trải dài từ Thọ Xuân đến Quan Hóa, cùng kinh nghiệm nhiều năm và đội ngũ kỹ thuật chuyên nghiệp, chúng tôi cam kết mang đến những sản phẩm chất lượng cao và dịch vụ tối ưu cho khách hàng.</p>
+                    
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-solar-panel" aria-hidden="true"></i>
+                            <h4>Chất Lượng Cao</h4>
+                            <p>Sử dụng công nghệ tiên tiến nhất</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-leaf" aria-hidden="true"></i>
+                            <h4>Thân Thiện Môi Trường</h4>
+                            <p>Giảm thiểu khí thải CO2</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-dollar-sign" aria-hidden="true"></i>
+                            <h4>Tiết Kiệm Chi Phí</h4>
+                            <p>Giảm hóa đơn điện hàng tháng</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                         alt="Lắp đặt tấm pin năng lượng mặt trời" 
+                         loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title">Dịch Vụ Của Chúng Tôi</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-home" aria-hidden="true"></i>
+                    </div>
+                    <h3>Lắp Đặt Hộ Gia Đình</h3>
+                    <p>Giải pháp điện mặt trời cho nhà ở với công suất từ 3kW đến 10kW, phù hợp với mọi nhu cầu sử dụng.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-building" aria-hidden="true"></i>
+                    </div>
+                    <h3>Dự Án Thương Mại</h3>
+                    <p>Hệ thống điện mặt trời quy mô lớn cho doanh nghiệp, nhà máy, trung tâm thương mại.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-tools" aria-hidden="true"></i>
+                    </div>
+                    <h3>Bảo Trì & Sửa Chữa</h3>
+                    <p>Dịch vụ bảo trì định kỳ và sửa chữa nhanh chóng, đảm bảo hệ thống hoạt động tối ưu.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-calculator" aria-hidden="true"></i>
+                    </div>
+                    <h3>Tư Vấn & Thiết Kế</h3>
+                    <p>Đội ngũ chuyên gia tư vấn và thiết kế hệ thống phù hợp với từng đối tượng khách hàng.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Locations Section -->
+    <section id="locations" class="locations">
+        <div class="container">
+            <h2 class="section-title">Các Cơ Sở Của Chúng Tôi</h2>
+            <div class="locations-grid">
+                <div class="location-card">
+                    <div class="location-icon">
+                        <i class="fas fa-building" aria-hidden="true"></i>
+                    </div>
+                    <h3>Cơ Sở 1</h3>
+                    <p class="location-address">TT Sao Vàng, Thọ Xuân, Thanh Hóa</p>
+                    <p class="location-type">Trụ sở chính</p>
+                </div>
+                <div class="location-card">
+                    <div class="location-icon">
+                        <i class="fas fa-store" aria-hidden="true"></i>
+                    </div>
+                    <h3>Cơ Sở 2</h3>
+                    <p class="location-address">292 Phú Liên, Phú Sơn, TP Thanh Hóa</p>
+                    <p class="location-type">Chi nhánh thành phố</p>
+                </div>
+                <div class="location-card">
+                    <div class="location-icon">
+                        <i class="fas fa-industry" aria-hidden="true"></i>
+                    </div>
+                    <h3>Cơ Sở 3</h3>
+                    <p class="location-address">Phúc Do, Cẩm Tân, Cẩm Thủy, Thanh Hóa</p>
+                    <p class="location-type">Chi nhánh Cẩm Thủy</p>
+                </div>
+                <div class="location-card">
+                    <div class="location-icon">
+                        <i class="fas fa-home" aria-hidden="true"></i>
+                    </div>
+                    <h3>Cơ Sở 4</h3>
+                    <p class="location-address">Chợ Hồi Xuân, Quan Hóa, Thanh Hóa</p>
+                    <p class="location-type">Chi nhánh Quan Hóa</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">Dự Án Tiêu Biểu</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <img src="https://images.unsplash.com/photo-1613665813446-82a78c468a1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                         alt="Dự án biệt thự Vinhomes" 
+                         loading="lazy">
+                    <div class="project-info">
+                        <h3>Biệt Thự Vinhomes</h3>
+                        <p><i class="fas fa-bolt"></i> Công suất: 8kW</p>
+                        <p><i class="fas fa-calendar"></i> Thời gian: 2023</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Địa điểm: Thanh Hóa</p>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                         alt="Dự án nhà máy sản xuất" 
+                         loading="lazy">
+                    <div class="project-info">
+                        <h3>Nhà Máy Sản Xuất</h3>
+                        <p><i class="fas fa-bolt"></i> Công suất: 500kW</p>
+                        <p><i class="fas fa-calendar"></i> Thời gian: 2023</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Địa điểm: Thọ Xuân</p>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://images.unsplash.com/photo-1613665813446-82a78c468a1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                         alt="Dự án trường học" 
+                         loading="lazy">
+                    <div class="project-info">
+                        <h3>Trường Học</h3>
+                        <p><i class="fas fa-bolt"></i> Công suất: 50kW</p>
+                        <p><i class="fas fa-calendar"></i> Thời gian: 2022</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Địa điểm: Cẩm Thủy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Liên Hệ</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Thông Tin Liên Hệ</h3>
+                    <div class="contact-item">
+                        <i class="fas fa-user" aria-hidden="true"></i>
+                        <div>
+                            <h4>Người Liên Hệ</h4>
+                            <p>Long Chung</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone" aria-hidden="true"></i>
+                        <div>
+                            <h4>Điện Thoại</h4>
+                            <p><a href="tel:0983106839">098.310.6839</a></p>
+                            <p><a href="tel:0819648999">08.1964.8999</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p><a href="mailto:dienmattroiqhth@gmail.com">dienmattroiqhth@gmail.com</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                        <div>
+                            <h4>Địa Chỉ</h4>
+                            <p>Cơ sở 1: TT Sao Vàng, Thọ Xuân, Thanh Hóa</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock" aria-hidden="true"></i>
+                        <div>
+                            <h4>Giờ Làm Việc</h4>
+                            <p>Thứ 2 - Thứ 7: 8:00 - 18:00</p>
+                            <p>Chủ nhật: 8:00 - 12:00</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <form id="contactForm" novalidate>
+                        <div class="form-group">
+                            <label for="name" class="sr-only">Họ và tên</label>
+                            <input type="text" id="name" name="name" placeholder="Họ và tên" required>
+                            <span class="error-message" id="name-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="sr-only">Email</label>
+                            <input type="email" id="email" name="email" placeholder="Email" required>
+                            <span class="error-message" id="email-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone" class="sr-only">Số điện thoại</label>
+                            <input type="tel" id="phone" name="phone" placeholder="Số điện thoại" required>
+                            <span class="error-message" id="phone-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="message" class="sr-only">Nội dung tin nhắn</label>
+                            <textarea id="message" name="message" placeholder="Nội dung tin nhắn" rows="5" required></textarea>
+                            <span class="error-message" id="message-error"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Gửi Tin Nhắn
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <svg width="40" height="40" viewBox="0 0 50 50" aria-label="Hồi Xuân Solar Logo">
+                            <g class="sun-rays">
+                                <path d="M25 5 L27 15 L23 15 Z" fill="#FFD700"/>
+                                <path d="M25 35 L27 45 L23 45 Z" fill="#FFD700"/>
+                                <path d="M5 25 L15 27 L15 23 Z" fill="#FFD700"/>
+                                <path d="M35 25 L45 27 L45 23 Z" fill="#FFD700"/>
+                            </g>
+                            <circle cx="25" cy="25" r="8" fill="url(#sunGradient)"/>
+                            <g class="house">
+                                <path d="M15 30 L25 20 L35 30 L35 40 L15 40 Z" fill="#4A90E2"/>
+                                <rect x="20" y="32" width="10" height="8" fill="#4A90E2"/>
+                            </g>
+                        </svg>
+                        <span>Hồi Xuân Solar</span>
+                    </div>
+                    <p>Giải pháp năng lượng xanh cho tương lai bền vững</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Dịch Vụ</h4>
+                    <ul>
+                        <li><a href="#services">Lắp đặt hộ gia đình</a></li>
+                        <li><a href="#services">Dự án thương mại</a></li>
+                        <li><a href="#services">Bảo trì & sửa chữa</a></li>
+                        <li><a href="#services">Tư vấn & thiết kế</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Liên Hệ</h4>
+                    <p><i class="fas fa-user"></i> Long Chung</p>
+                    <p><i class="fas fa-phone"></i> <a href="tel:0983106839">098.310.6839</a></p>
+                    <p><i class="fas fa-phone"></i> <a href="tel:0819648999">081.964.8999</a></p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:dienmattroiqhth@gmail.com">dienmattroiqhth@gmail.com</a></p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Công Ty TNHH Điện Mặt Trời Hồi Xuân. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
