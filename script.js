@@ -4,9 +4,15 @@ document.addEventListener('DOMContentLoaded', function() {
     initNavigation();
     initScrollEffects();
     initAnimations();
-    initContactForm();
-    initFloatingElements();
+    initReservationForm();
+    initVideoControls();
+    initProjectsGallery();
     initAccessibility();
+    initHeroSlideshow();
+    initProjectsCarousel();
+    initFloatingChat();
+    initLogoFallback();
+    initSupportPanel();
 });
 
 // Navigation functionality
@@ -69,13 +75,158 @@ function initNavigation() {
             document.body.style.overflow = '';
         }
     });
+
+    // Hamburger animation
+    hamburger.addEventListener('click', () => {
+        const bars = hamburger.querySelectorAll('.bar');
+        bars.forEach((bar, index) => {
+            if (hamburger.classList.contains('active')) {
+                if (index === 0) bar.style.transform = 'rotate(45deg) translate(5px, 5px)';
+                if (index === 1) bar.style.opacity = '0';
+                if (index === 2) bar.style.transform = 'rotate(-45deg) translate(7px, -6px)';
+            } else {
+                bar.style.transform = '';
+                bar.style.opacity = '';
+            }
+        });
+    });
+}
+
+// Support panel toggle and bridge to chat modal
+function initSupportPanel() {
+    const panel = document.getElementById('support-panel');
+    const toggle = document.getElementById('float-main');
+    const closeBtn = document.getElementById('support-close');
+    const liveBtn = document.getElementById('support-live');
+    const chatModal = document.getElementById('chat-modal');
+    if (!panel || !toggle) return;
+
+    // Open panel when floating chat is clicked (instead of modal)
+    toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isOpen = panel.classList.toggle('open');
+        if (isOpen) {
+            chatModal.classList.remove('open');
+        }
+    });
+
+    closeBtn?.addEventListener('click', () => panel.classList.remove('open'));
+
+    // When click live chat, open the chat modal quick view
+    liveBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        panel.classList.remove('open');
+        document.getElementById('chat-options')?.querySelector('#chat-quick')?.click();
+        // ensure modal is open
+        chatModal.classList.add('open');
+    });
+}
+
+// Replace missing logo.png with inline SVG fallback
+function initLogoFallback() {
+    const logoSvgs = `
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 40'>
+  <defs>
+    <linearGradient id='g' x1='0' x2='1' y1='0' y2='0'>
+      <stop offset='0' stop-color='%23FDB813'/>
+      <stop offset='1' stop-color='%230ea5e9'/>
+    </linearGradient>
+  </defs>
+  <g transform='translate(0,2)'>
+    <circle cx='22' cy='18' r='10' fill='%23FDB813'/>
+    <g fill='%2325636e'>
+      <rect x='40' y='16' width='14' height='8' rx='1'/>
+      <rect x='56' y='16' width='14' height='8' rx='1'/>
+      <rect x='72' y='16' width='14' height='8' rx='1'/>
+      <rect x='48' y='26' width='14' height='8' rx='1'/>
+      <rect x='64' y='26' width='14' height='8' rx='1'/>
+    </g>
+    <text x='90' y='23' font-family='Playfair Display, serif' font-weight='700' font-size='14' fill='url(%23g)'>Hồi Xuân Solar</text>
+  </g>
+</svg>`;
+
+    document.querySelectorAll('.brand-logo').forEach(img => {
+        const setFallback = () => {
+            const dataUri = 'data:image/svg+xml;utf8,' + encodeURIComponent(logoSvgs);
+            img.onerror = null;
+            img.src = dataUri;
+        };
+        if (!img.complete || img.naturalWidth === 0) {
+            img.addEventListener('error', setFallback);
+            if (img.complete && img.naturalWidth === 0) setFallback();
+        }
+    });
+}
+
+// Floating chat toggle
+function initFloatingChat() {
+    const toggle = document.getElementById('float-main');
+    const modal = document.getElementById('chat-modal');
+    const overlay = document.getElementById('chat-overlay');
+    const closeBtn = document.getElementById('chat-close');
+    if (!toggle || !modal) return;
+
+    function closeModal() {
+        modal.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    toggle.addEventListener('click', () => {
+        const isOpen = modal.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        modal.setAttribute('aria-hidden', String(!isOpen));
+    });
+
+    overlay?.addEventListener('click', closeModal);
+    closeBtn?.addEventListener('click', closeModal);
+
+    // Inline quick chat
+    const quickBtn = document.getElementById('chat-quick');
+    const options = document.getElementById('chat-options');
+    const convo = document.getElementById('chat-convo');
+    const form = document.getElementById('chat-form');
+    const text = document.getElementById('chat-text');
+    const messages = document.getElementById('chat-messages');
+    const back = document.getElementById('chat-back');
+
+    function showConvo() {
+        if (!options || !convo) return;
+        options.hidden = true;
+        convo.hidden = false;
+        text?.focus();
+    }
+
+    quickBtn?.addEventListener('click', showConvo);
+    back?.addEventListener('click', () => {
+        convo.hidden = true;
+        options.hidden = false;
+    });
+
+    form?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const value = text.value.trim();
+        if (!value) return;
+        const bubble = document.createElement('div');
+        bubble.className = 'msg outgoing';
+        bubble.textContent = value;
+        messages.appendChild(bubble);
+        text.value = '';
+        messages.scrollTop = messages.scrollHeight;
+        // Simulate reply
+        setTimeout(() => {
+            const reply = document.createElement('div');
+            reply.className = 'msg incoming';
+            reply.textContent = 'Cảm ơn bạn! Chúng tôi sẽ liên hệ ngay.';
+            messages.appendChild(reply);
+            messages.scrollTop = messages.scrollHeight;
+        }, 1000);
+    });
 }
 
 // Scroll effects
 function initScrollEffects() {
     const navbar = document.getElementById('navbar');
-    const scrollIndicator = document.querySelector('.scroll-indicator');
-    const backToTop = document.querySelector('.back-to-top');
 
     // Navbar scroll effect
     window.addEventListener('scroll', () => {
@@ -86,17 +237,6 @@ function initScrollEffects() {
                 navbar.classList.remove('scrolled');
             }
         }
-
-        // Show/hide back to top button
-        if (backToTop) {
-            if (window.scrollY > 300) {
-                backToTop.style.opacity = '1';
-                backToTop.style.visibility = 'visible';
-            } else {
-                backToTop.style.opacity = '0';
-                backToTop.style.visibility = 'hidden';
-            }
-        }
     });
 
     // Smooth scrolling for navigation links
@@ -105,7 +245,7 @@ function initScrollEffects() {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                const offsetTop = target.offsetTop - 70; // Account for fixed navbar
+                const offsetTop = target.offsetTop - 80; // Account for fixed navbar
                 window.scrollTo({
                     top: offsetTop,
                     behavior: 'smooth'
@@ -113,20 +253,54 @@ function initScrollEffects() {
             }
         });
     });
+}
 
-    // Scroll indicator click
-    if (scrollIndicator) {
-        scrollIndicator.addEventListener('click', () => {
-            const aboutSection = document.getElementById('about');
-            if (aboutSection) {
-                const offsetTop = aboutSection.offsetTop - 70;
-                window.scrollTo({
-                    top: offsetTop,
-                    behavior: 'smooth'
-                });
-            }
+// Hero slideshow
+function initHeroSlideshow() {
+    const slides = document.querySelectorAll('.hero-slideshow .slide');
+    if (!slides.length) return;
+
+    // Solar-themed background images
+    const images = [
+        'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1600&q=80',
+        'https://images.unsplash.com/photo-1506466010722-395aa2bef877?auto=format&fit=crop&w=1600&q=80',
+        'https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=1600&q=80',
+        'https://images.unsplash.com/photo-1584270354949-1f9e1a0f8a6d?auto=format&fit=crop&w=1600&q=80'
+    ];
+
+    // Preload
+    images.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
+
+    let current = 0;
+    function apply(idx) {
+        slides.forEach((slide, i) => {
+            slide.style.backgroundImage = `url(${images[idx]})`;
+            slide.classList.toggle('active', i === 0);
         });
     }
+
+    apply(current);
+
+    setInterval(() => {
+        current = (current + 1) % images.length;
+        // Crossfade using the two layers
+        const top = slides[0];
+        const bottom = slides[1];
+        // Swap images
+        bottom.style.backgroundImage = `url(${images[current]})`;
+        // Fade in bottom
+        bottom.classList.add('active');
+        top.classList.remove('active');
+        // Swap node roles after transition
+        setTimeout(() => {
+            const parent = top.parentNode;
+            if (!parent) return;
+            parent.appendChild(top); // move to end so 'bottom' becomes new 'top'
+        }, 1000);
+    }, 5000);
 }
 
 // Animations
@@ -147,39 +321,117 @@ function initAnimations() {
     }, observerOptions);
 
     // Observe elements for animation
-    const animateElements = document.querySelectorAll('.feature, .service-card, .location-card, .project-card, .contact-item');
+    const animateElements = document.querySelectorAll('.feature-item, .menu-item, .contact-item');
     animateElements.forEach(el => {
         observer.observe(el);
     });
 
-    // Parallax effect for hero section
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const heroBackground = document.querySelector('.hero-background');
-        if (heroBackground) {
-            heroBackground.style.transform = `translateY(${scrolled * 0.5}px)`;
-        }
+    // Hero letter hover effects
+    const heroLetters = document.querySelectorAll('.hero-letter');
+    heroLetters.forEach((letter, index) => {
+        letter.addEventListener('mouseenter', () => {
+            letter.style.transform = 'translateY(-10px)';
+            letter.style.color = '#D4AF37';
+        });
+        
+        letter.addEventListener('mouseleave', () => {
+            letter.style.transform = '';
+            letter.style.color = '';
+        });
+    });
+
+    // Pasta image rotation on hover
+    const pastaImage = document.querySelector('.pasta-image');
+    if (pastaImage) {
+        pastaImage.addEventListener('mouseenter', () => {
+            pastaImage.style.transform = 'rotate(10deg) scale(1.1)';
+        });
+        
+        pastaImage.addEventListener('mouseleave', () => {
+            pastaImage.style.transform = '';
+        });
+    }
+}
+
+// Projects gallery population
+function initProjectsGallery() {
+    const track = document.getElementById('projects-track');
+    if (!track) return;
+
+    // Build list of local images in /images (anh1.jpg -> anh21.jpg)
+    const projectImages = Array.from({ length: 21 }, (_, i) => `images/anh${i + 1}.jpg`);
+
+    projectImages.forEach((src, index) => {
+        const item = document.createElement('div');
+        item.className = 'projects-item';
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.loading = 'lazy';
+        img.alt = `Dự án điện mặt trời #${index + 1}`;
+
+        item.appendChild(img);
+        track.appendChild(item);
     });
 }
 
-// Contact form functionality
-function initContactForm() {
-    const contactForm = document.getElementById('contactForm');
-    if (!contactForm) return;
+// Carousel controls for projects
+function initProjectsCarousel() {
+    const track = document.getElementById('projects-track');
+    const prev = document.querySelector('.projects-prev');
+    const next = document.querySelector('.projects-next');
+    if (!track || !prev || !next) return;
+
+    let scrollAmount = 0;
+    const itemWidth = () => track.querySelector('.projects-item')?.clientWidth || 260;
+    const gap = 20;
+
+    function scrollTo(amount) {
+        track.scrollTo({ left: amount, behavior: 'smooth' });
+    }
+
+    prev.addEventListener('click', () => {
+        scrollAmount = Math.max(0, scrollAmount - (itemWidth() + gap));
+        scrollTo(scrollAmount);
+    });
+
+    next.addEventListener('click', () => {
+        scrollAmount = Math.min(track.scrollWidth, scrollAmount + (itemWidth() + gap));
+        scrollTo(scrollAmount);
+    });
+}
+
+// Reservation form functionality
+function initReservationForm() {
+    const reservationForm = document.getElementById('reservationForm');
+    if (!reservationForm) return;
+
+    // Set minimum date to today
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        dateInput.value = today;
+    }
+
+    // Set default time
+    const timeInput = document.getElementById('time');
+    if (timeInput) {
+        timeInput.value = '09:00';
+    }
 
     // Form validation
-    const inputs = contactForm.querySelectorAll('input, textarea');
+    const inputs = reservationForm.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
         input.addEventListener('blur', validateField);
         input.addEventListener('input', clearError);
     });
 
-    contactForm.addEventListener('submit', handleFormSubmit);
+    reservationForm.addEventListener('submit', handleFormSubmit);
 
     function validateField(e) {
         const field = e.target;
         const value = field.value.trim();
-        const errorElement = document.getElementById(`${field.id}-error`);
         
         let isValid = true;
         let errorMessage = '';
@@ -189,13 +441,9 @@ function initContactForm() {
 
         // Validation rules
         switch (field.type) {
-            case 'email':
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            case 'text':
                 if (!value) {
-                    errorMessage = 'Email là bắt buộc';
-                    isValid = false;
-                } else if (!emailRegex.test(value)) {
-                    errorMessage = 'Email không hợp lệ';
+                    errorMessage = 'Trường này là bắt buộc';
                     isValid = false;
                 }
                 break;
@@ -209,23 +457,31 @@ function initContactForm() {
                     isValid = false;
                 }
                 break;
-            default:
+            case 'date':
                 if (!value) {
-                    errorMessage = 'Trường này là bắt buộc';
+                    errorMessage = 'Ngày đặt bàn là bắt buộc';
                     isValid = false;
                 }
+                break;
+            case 'time':
+                if (!value) {
+                    errorMessage = 'Giờ đặt bàn là bắt buộc';
+                    isValid = false;
+                }
+                break;
+        }
+
+        if (field.tagName === 'SELECT' && !value) {
+            errorMessage = 'Vui lòng chọn quy mô hệ thống';
+            isValid = false;
         }
 
         // Display error
         if (!isValid) {
             field.classList.add('error');
-            if (errorElement) {
-                errorElement.textContent = errorMessage;
-            }
+            field.style.borderColor = '#ff6b6b';
         } else {
-            if (errorElement) {
-                errorElement.textContent = '';
-            }
+            field.style.borderColor = '';
         }
 
         return isValid;
@@ -233,12 +489,8 @@ function initContactForm() {
 
     function clearError(e) {
         const field = e.target;
-        const errorElement = document.getElementById(`${field.id}-error`);
-        
         field.classList.remove('error');
-        if (errorElement) {
-            errorElement.textContent = '';
-        }
+        field.style.borderColor = '';
     }
 
     function handleFormSubmit(e) {
@@ -247,192 +499,95 @@ function initContactForm() {
         // Validate all fields
         let isValid = true;
         inputs.forEach(input => {
-            if (!validateField({ target: input })) {
+            if (input.hasAttribute('required') && !validateField({ target: input })) {
                 isValid = false;
             }
         });
 
         if (isValid) {
-            // Show success message
-            showNotification('Tin nhắn đã được gửi thành công! Chúng tôi sẽ liên hệ lại sớm nhất.', 'success');
-            
-            // Reset form
-            contactForm.reset();
-            
-            // Clear all error messages
-            document.querySelectorAll('.error-message').forEach(error => {
-                error.textContent = '';
-            });
+            // Get form data
+            const formData = new FormData(reservationForm);
+            const reservationData = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                date: formData.get('date'),
+                time: formData.get('time'),
+                guests: formData.get('guests'),
+                message: formData.get('message') || ''
+            };
+
+            // Show loading state
+            const submitBtn = reservationForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            submitBtn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                // Show success message
+                showNotification('Gửi yêu cầu tư vấn thành công! Chúng tôi sẽ liên hệ trong vòng 30 phút.', 'success');
+                
+                // Reset form
+                reservationForm.reset();
+                
+                // Set default values again
+                if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+                if (timeInput) timeInput.value = '09:00';
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                // Log data (in real app, this would be sent to server)
+                console.log('Reservation Data:', reservationData);
+                
+            }, 2000);
         } else {
             showNotification('Vui lòng kiểm tra lại thông tin và thử lại.', 'error');
         }
     }
 }
 
-// Floating elements
-function initFloatingElements() {
-    // Add floating action button
-    addFloatingActionButton();
+// Video controls
+function initVideoControls() {
+    const playButton = document.querySelector('.play-button');
+    const controlBtns = document.querySelectorAll('.control-btn');
     
-    // Add back to top button
-    addBackToTopButton();
+    if (playButton) {
+        playButton.addEventListener('click', () => {
+            // In a real application, this would control video playback
+            showNotification('Video sẽ được phát trong phiên bản đầy đủ', 'info');
+        });
+    }
     
-    // Add scroll progress bar
-    addScrollProgressBar();
+    controlBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const icon = btn.querySelector('i');
+            if (icon.classList.contains('fa-play')) {
+                showNotification('Đang phát video...', 'info');
+            } else {
+                showNotification('Đã tạm dừng video', 'info');
+            }
+        });
+    });
 }
 
-function addFloatingActionButton() {
-    const fab = document.createElement('div');
-    fab.className = 'floating-action-button';
-    fab.setAttribute('role', 'button');
-    fab.setAttribute('tabindex', '0');
-    fab.setAttribute('aria-label', 'Liên hệ ngay');
-    fab.innerHTML = `
-        <i class="fas fa-phone" aria-hidden="true"></i>
-        <div class="fab-tooltip">Liên hệ ngay</div>
-    `;
+// Navigation arrows
+function initNavigationArrows() {
+    const prevBtn = document.querySelector('.nav-prev');
+    const nextBtn = document.querySelector('.nav-next');
     
-    fab.style.cssText = `
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(45deg, #4A90E2, #00CED1);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.5rem;
-        cursor: pointer;
-        box-shadow: 0 4px 20px rgba(74, 144, 226, 0.3);
-        z-index: 1000;
-        transition: all 0.3s ease;
-        border: none;
-    `;
-    
-    const tooltip = fab.querySelector('.fab-tooltip');
-    tooltip.style.cssText = `
-        position: absolute;
-        right: 70px;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 0.875rem;
-        white-space: nowrap;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        pointer-events: none;
-    `;
-    
-    // Hover effects
-    fab.addEventListener('mouseenter', () => {
-        fab.style.transform = 'scale(1.1)';
-        tooltip.style.opacity = '1';
-        tooltip.style.visibility = 'visible';
-    });
-    
-    fab.addEventListener('mouseleave', () => {
-        fab.style.transform = 'scale(1)';
-        tooltip.style.opacity = '0';
-        tooltip.style.visibility = 'hidden';
-    });
-    
-    // Click functionality
-    fab.addEventListener('click', () => {
-        const contactSection = document.getElementById('contact');
-        if (contactSection) {
-            const offsetTop = contactSection.offsetTop - 70;
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
-        }
-    });
-    
-    fab.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            fab.click();
-        }
-    });
-    
-    document.body.appendChild(fab);
-}
-
-function addBackToTopButton() {
-    const backToTop = document.createElement('div');
-    backToTop.className = 'back-to-top';
-    backToTop.setAttribute('role', 'button');
-    backToTop.setAttribute('tabindex', '0');
-    backToTop.setAttribute('aria-label', 'Cuộn lên đầu trang');
-    backToTop.innerHTML = '<i class="fas fa-chevron-up" aria-hidden="true"></i>';
-    
-    backToTop.style.cssText = `
-        position: fixed;
-        bottom: 100px;
-        right: 30px;
-        width: 50px;
-        height: 50px;
-        background: rgba(74, 144, 226, 0.8);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.2rem;
-        cursor: pointer;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        z-index: 1000;
-        border: none;
-    `;
-    
-    backToTop.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-    
-    backToTop.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            backToTop.click();
-        }
-    });
-    
-    document.body.appendChild(backToTop);
-}
-
-function addScrollProgressBar() {
-    const progressBar = document.createElement('div');
-    progressBar.className = 'scroll-progress';
-    progressBar.setAttribute('role', 'progressbar');
-    progressBar.setAttribute('aria-label', 'Tiến độ cuộn trang');
-    
-    progressBar.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 0%;
-        height: 3px;
-        background: linear-gradient(45deg, #4A90E2, #00CED1);
-        z-index: 1001;
-        transition: width 0.1s ease;
-    `;
-    
-    document.body.appendChild(progressBar);
-    
-    // Update progress on scroll
-    window.addEventListener('scroll', () => {
-        const scrollTop = window.pageYOffset;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = (scrollTop / docHeight) * 100;
-        progressBar.style.width = scrollPercent + '%';
-        progressBar.setAttribute('aria-valuenow', Math.round(scrollPercent));
-    });
+    if (prevBtn && nextBtn) {
+        prevBtn.addEventListener('click', () => {
+            // In a real application, this would navigate to previous slide/content
+            showNotification('Chuyển đến nội dung trước', 'info');
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            // In a real application, this would navigate to next slide/content
+            showNotification('Chuyển đến nội dung tiếp theo', 'info');
+        });
+    }
 }
 
 // Notification system
@@ -444,7 +599,7 @@ function showNotification(message, type = 'info') {
     
     notification.style.cssText = `
         position: fixed;
-        top: 20px;
+        top: 100px;
         right: 20px;
         padding: 15px 20px;
         border-radius: 8px;
@@ -460,14 +615,15 @@ function showNotification(message, type = 'info') {
     // Set background color based on type
     switch (type) {
         case 'success':
-            notification.style.background = '#28a745';
+            notification.style.background = '#D4AF37';
+            notification.style.color = '#1a1a1a';
             break;
         case 'error':
             notification.style.background = '#dc3545';
             break;
         case 'warning':
             notification.style.background = '#ffc107';
-            notification.style.color = '#333';
+            notification.style.color = '#1a1a1a';
             break;
         default:
             notification.style.background = '#17a2b8';
@@ -505,20 +661,21 @@ function showNotification(message, type = 'info') {
 function initAccessibility() {
     // Skip to main content link
     const skipLink = document.createElement('a');
-    skipLink.href = '#main-content';
+    skipLink.href = '#home';
     skipLink.textContent = 'Chuyển đến nội dung chính';
     skipLink.className = 'skip-link';
     skipLink.style.cssText = `
         position: absolute;
         top: -40px;
         left: 6px;
-        background: #4A90E2;
-        color: white;
+        background: #D4AF37;
+        color: #1a1a1a;
         padding: 8px;
         text-decoration: none;
         border-radius: 4px;
         z-index: 10000;
         transition: top 0.3s ease;
+        font-weight: 600;
     `;
     
     skipLink.addEventListener('focus', () => {
@@ -531,22 +688,85 @@ function initAccessibility() {
     
     document.body.insertBefore(skipLink, document.body.firstChild);
     
-    // Add main content id
-    const mainContent = document.querySelector('.hero') || document.body;
-    mainContent.id = 'main-content';
-    
-    // Keyboard navigation for cards
-    const cards = document.querySelectorAll('.service-card, .location-card, .project-card');
-    cards.forEach(card => {
-        card.setAttribute('tabindex', '0');
-        card.addEventListener('keydown', (e) => {
+    // Keyboard navigation for interactive elements
+    const interactiveElements = document.querySelectorAll('.menu-item, .nav-arrow, .control-btn, .play-button');
+    interactiveElements.forEach(element => {
+        element.setAttribute('tabindex', '0');
+        element.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                // Add any card click functionality here
+                element.click();
             }
         });
     });
 }
+
+// Initialize navigation arrows
+initNavigationArrows();
+
+// Add loading animation to page
+window.addEventListener('load', () => {
+    document.body.classList.add('loaded');
+    
+    // Animate elements on page load
+    const animateOnLoad = document.querySelectorAll('.section-title');
+    animateOnLoad.forEach((el, index) => {
+        setTimeout(() => {
+            el.classList.add('fade-in-up');
+        }, index * 200);
+    });
+});
+
+// Handle offline/online status
+window.addEventListener('online', () => {
+    showNotification('Kết nối internet đã được khôi phục', 'success');
+});
+
+window.addEventListener('offline', () => {
+    showNotification('Không có kết nối internet', 'warning');
+});
+
+// Parallax effect for hero section (subtle)
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const heroBackground = document.querySelector('.hero-background');
+    if (heroBackground) {
+        heroBackground.style.transform = `translateY(${scrolled * 0.2}px)`;
+    }
+});
+
+// Menu item hover effects
+document.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('mouseenter', () => {
+        item.style.transform = 'translateY(-10px) scale(1.02)';
+    });
+    
+    item.addEventListener('mouseleave', () => {
+        item.style.transform = '';
+    });
+});
+
+// Social links functionality
+document.querySelectorAll('.social-links a').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const platform = link.querySelector('i').classList[1].split('-')[1];
+        showNotification(`Chuyển đến trang ${platform.charAt(0).toUpperCase() + platform.slice(1)}`, 'info');
+    });
+});
+
+// Form input enhancements
+document.querySelectorAll('input, select, textarea').forEach(input => {
+    input.addEventListener('focus', () => {
+        input.style.transform = 'scale(1.02)';
+        input.style.boxShadow = '0 0 0 2px rgba(212, 175, 55, 0.2)';
+    });
+    
+    input.addEventListener('blur', () => {
+        input.style.transform = '';
+        input.style.boxShadow = '';
+    });
+});
 
 // Performance optimizations
 function initPerformanceOptimizations() {
@@ -556,9 +776,11 @@ function initPerformanceOptimizations() {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    imageObserver.unobserve(img);
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy');
+                        imageObserver.unobserve(img);
+                    }
                 }
             });
         });
@@ -570,7 +792,7 @@ function initPerformanceOptimizations() {
     
     // Preload critical resources
     const criticalImages = [
-        'https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'
+        'https://images.unsplash.com/photo-1509395176047-4a66953fd231?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
     ];
     
     criticalImages.forEach(src => {
@@ -597,25 +819,3 @@ if ('serviceWorker' in navigator) {
             });
     });
 }
-
-// Add loading animation to page
-window.addEventListener('load', () => {
-    document.body.classList.add('loaded');
-    
-    // Animate elements on page load
-    const animateOnLoad = document.querySelectorAll('.hero-content, .section-title');
-    animateOnLoad.forEach((el, index) => {
-        setTimeout(() => {
-            el.classList.add('fade-in-up');
-        }, index * 200);
-    });
-});
-
-// Handle offline/online status
-window.addEventListener('online', () => {
-    showNotification('Kết nối internet đã được khôi phục', 'success');
-});
-
-window.addEventListener('offline', () => {
-    showNotification('Không có kết nối internet', 'warning');
-});
