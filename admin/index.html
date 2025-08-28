@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Hồi Xuân Solar</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Login Form -->
+    <div class="login-container" id="loginForm">
+        <form class="login-form" onsubmit="return handleLogin(event)">
+            <h2>Đăng nhập Admin</h2>
+            <div class="input-group">
+                <label for="username">Tên đăng nhập</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Mật khẩu</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit">Đăng nhập</button>
+        </form>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-container" id="adminDashboard" style="display: none;">
+        <nav class="admin-nav">
+            <div class="nav-brand">
+                <img src="../images/logo.png" alt="Logo" class="nav-logo">
+                <span>Admin Panel</span>
+            </div>
+            <div class="nav-items">
+                <button class="nav-btn active" onclick="switchTab('chat')">
+                    <i class="fas fa-comments"></i>
+                    <span>Chat</span>
+                </button>
+                <button class="nav-btn" onclick="switchTab('media')">
+                    <i class="fas fa-images"></i>
+                    <span>Media</span>
+                </button>
+                <button class="nav-btn" onclick="switchTab('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>Cài đặt</span>
+                </button>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Đăng xuất</span>
+            </button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="admin-content">
+            <!-- Chat Section -->
+            <div class="content-section active" id="chatSection">
+                <div class="chat-container">
+                    <div class="users-list">
+                        <div class="users-header">
+                            <h3>Danh sách chat</h3>
+                            <div class="users-filter">
+                                <input type="text" placeholder="Tìm kiếm...">
+                                <select>
+                                    <option value="all">Tất cả</option>
+                                    <option value="active">Đang hoạt động</option>
+                                    <option value="waiting">Chờ trả lời</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="users-content" id="userList"></div>
+                    </div>
+                    <div class="chat-main">
+                        <div class="chat-header">
+                            <div class="chat-user-info">
+                                <span id="currentUserName">Chọn người dùng để bắt đầu chat</span>
+                                <span id="userStatus" class="status-badge"></span>
+                            </div>
+                            <div class="chat-actions">
+                                <button title="Xem thông tin" onclick="showUserInfo()">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <button title="Kết thúc chat" onclick="endChat()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="chatMessages"></div>
+                        <div class="chat-input">
+                            <div class="input-attachments">
+                                <button onclick="showEmojiPicker()">
+                                    <i class="far fa-smile"></i>
+                                </button>
+                                <input type="file" id="fileUpload" hidden accept="image/*">
+                                <button onclick="document.getElementById('fileUpload').click()">
+                                    <i class="fas fa-paperclip"></i>
+                                </button>
+                            </div>
+                            <form id="chatForm" class="message-form">
+                                <input type="text" placeholder="Nhập tin nhắn..." required>
+                                <button type="submit">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="user-info-panel" id="userInfoPanel">
+                        <div class="info-header">
+                            <h3>Thông tin người dùng</h3>
+                            <button onclick="toggleUserInfo()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-item">
+                                <span class="label">ID:</span>
+                                <span id="userId"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Thời gian bắt đầu:</span>
+                                <span id="chatStartTime"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Trạng thái:</span>
+                                <span id="detailedStatus"></span>
+                            </div>
+                            <div class="info-notes">
+                                <h4>Ghi chú</h4>
+                                <textarea id="userNotes" placeholder="Thêm ghi chú về người dùng này..."></textarea>
+                                <button onclick="saveNotes()">Lưu ghi chú</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Media Section -->
+            <div class="content-section" id="mediaSection">
+                <div class="media-container">
+                    <div class="media-header">
+                        <h3>Quản lý Media</h3>
+                        <div class="media-actions">
+                            <button onclick="document.getElementById('mediaUpload').click()">
+                                <i class="fas fa-upload"></i>
+                                Tải lên
+                            </button>
+                            <input type="file" id="mediaUpload" hidden multiple accept="image/*">
+                        </div>
+                    </div>
+                    <div class="media-grid" id="mediaGrid"></div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="content-section" id="settingsSection">
+                <div class="settings-container">
+                    <h3>Cài đặt chung</h3>
+                    <div class="settings-group">
+                        <h4>Tùy chỉnh chat</h4>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="autoReply">
+                                Bật trả lời tự động
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Tin nhắn tự động:</label>
+                            <textarea id="autoReplyMessage">Xin chào! Cảm ơn bạn đã liên hệ. Chúng tôi sẽ phản hồi sớm nhất có thể.</textarea>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <h4>Thông báo</h4>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="soundNotification">
+                                Bật âm thanh thông báo
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="desktopNotification">
+                                Bật thông báo desktop
+                            </label>
+                        </div>
+                    </div>
+                    <button onclick="saveSettings()" class="save-settings">
+                        <i class="fas fa-save"></i>
+                        Lưu cài đặt
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

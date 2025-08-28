@@ -10,9 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initAccessibility();
     initHeroSlideshow();
     initProjectsCarousel();
-    initFloatingChat();
+    initChat();
     initLogoFallback();
-    initSupportPanel();
 });
 
 // Navigation functionality
@@ -92,35 +91,7 @@ function initNavigation() {
     });
 }
 
-// Support panel toggle and bridge to chat modal
-function initSupportPanel() {
-    const panel = document.getElementById('support-panel');
-    const toggle = document.getElementById('float-main');
-    const closeBtn = document.getElementById('support-close');
-    const liveBtn = document.getElementById('support-live');
-    const chatModal = document.getElementById('chat-modal');
-    if (!panel || !toggle) return;
-
-    // Open panel when floating chat is clicked (instead of modal)
-    toggle.addEventListener('click', (e) => {
-        e.preventDefault();
-        const isOpen = panel.classList.toggle('open');
-        if (isOpen) {
-            chatModal.classList.remove('open');
-        }
-    });
-
-    closeBtn?.addEventListener('click', () => panel.classList.remove('open'));
-
-    // When click live chat, open the chat modal quick view
-    liveBtn?.addEventListener('click', (e) => {
-        e.preventDefault();
-        panel.classList.remove('open');
-        document.getElementById('chat-options')?.querySelector('#chat-quick')?.click();
-        // ensure modal is open
-        chatModal.classList.add('open');
-    });
-}
+// Removed conflicting support panel function
 
 // Replace missing logo.png with inline SVG fallback
 function initLogoFallback() {
@@ -158,69 +129,72 @@ function initLogoFallback() {
     });
 }
 
-// Floating chat toggle
-function initFloatingChat() {
-    const toggle = document.getElementById('float-main');
-    const modal = document.getElementById('chat-modal');
-    const overlay = document.getElementById('chat-overlay');
-    const closeBtn = document.getElementById('chat-close');
-    if (!toggle || !modal) return;
+// Replace missing logo.png with inline SVG fallback
 
-    function closeModal() {
-        modal.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-        modal.setAttribute('aria-hidden', 'true');
-    }
+// Initialize Chat Functionality
+function initChat() {
+    const floatChat = document.getElementById('floatChat');
+    const chatPopup = document.getElementById('chatPopup');
+    const directChat = document.getElementById('directChat');
+    const directChatBtn = document.getElementById('directChatBtn');
+    const closeChat = document.getElementById('closeChat');
+    const chatForm = document.getElementById('chatForm');
+    const chatMessages = document.getElementById('chatMessages');
 
-    toggle.addEventListener('click', () => {
-        const isOpen = modal.classList.toggle('open');
-        toggle.setAttribute('aria-expanded', String(isOpen));
-        modal.setAttribute('aria-hidden', String(!isOpen));
+    // Toggle chat popup
+    floatChat.addEventListener('click', () => {
+        chatPopup.classList.toggle('show');
+        // Close direct chat if popup is being opened
+        if (chatPopup.classList.contains('show')) {
+            directChat.classList.remove('show');
+        }
     });
 
-    overlay?.addEventListener('click', closeModal);
-    closeBtn?.addEventListener('click', closeModal);
-
-    // Inline quick chat
-    const quickBtn = document.getElementById('chat-quick');
-    const options = document.getElementById('chat-options');
-    const convo = document.getElementById('chat-convo');
-    const form = document.getElementById('chat-form');
-    const text = document.getElementById('chat-text');
-    const messages = document.getElementById('chat-messages');
-    const back = document.getElementById('chat-back');
-
-    function showConvo() {
-        if (!options || !convo) return;
-        options.hidden = true;
-        convo.hidden = false;
-        text?.focus();
-    }
-
-    quickBtn?.addEventListener('click', showConvo);
-    back?.addEventListener('click', () => {
-        convo.hidden = true;
-        options.hidden = false;
+    // Close popup when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!chatPopup.contains(e.target) && !floatChat.contains(e.target)) {
+            chatPopup.classList.remove('show');
+        }
     });
 
-    form?.addEventListener('submit', (e) => {
+    // Open direct chat
+    directChatBtn.addEventListener('click', () => {
+        directChat.classList.add('show');
+        chatPopup.classList.remove('show');
+    });
+
+    // Close direct chat
+    closeChat.addEventListener('click', () => {
+        directChat.classList.remove('show');
+    });
+
+    // Handle chat form submission
+    chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const value = text.value.trim();
-        if (!value) return;
-        const bubble = document.createElement('div');
-        bubble.className = 'msg outgoing';
-        bubble.textContent = value;
-        messages.appendChild(bubble);
-        text.value = '';
-        messages.scrollTop = messages.scrollHeight;
-        // Simulate reply
-        setTimeout(() => {
-            const reply = document.createElement('div');
-            reply.className = 'msg incoming';
-            reply.textContent = 'Cảm ơn bạn! Chúng tôi sẽ liên hệ ngay.';
-            messages.appendChild(reply);
-            messages.scrollTop = messages.scrollHeight;
-        }, 1000);
+        const input = chatForm.querySelector('input');
+        const message = input.value.trim();
+        
+        if (message) {
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'msg-user';
+            userMsg.textContent = message;
+            chatMessages.appendChild(userMsg);
+            
+            // Clear input
+            input.value = '';
+            
+            // Auto reply after a small delay
+            setTimeout(() => {
+                const replyMsg = document.createElement('div');
+                replyMsg.className = 'msg-reply';
+                replyMsg.textContent = 'Cảm ơn bạn đã liên hệ. Chúng tôi sẽ phản hồi sớm nhất có thể!';
+                chatMessages.appendChild(replyMsg);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+        }
     });
 }
 

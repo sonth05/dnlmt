@@ -358,89 +358,51 @@
     <script src="script.js"></script>
 
     <!-- Floating Chat -->
-    <div class="floating-chat" id="floating-chat" aria-label="Hỗ trợ nhanh">
-        <button class="float-main" id="float-main" aria-expanded="false" aria-controls="chat-modal" aria-label="Mở chat hỗ trợ">
+
+    
+    <!-- Floating Chat Button -->
+    <button class="float-chat" id="floatChat" aria-label="Mở chat">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Chat Popup -->
+    <div class="chat-popup" id="chatPopup">
+        <a href="https://oa.zalo.me/0983106839" target="_blank" rel="noopener" class="chat-option">
+            <i class="fab fa-facebook-messenger"></i>
+            <span>Chat qua Zalo OA</span>
+        </a>
+        <button class="chat-option" id="directChatBtn">
             <i class="fas fa-comments"></i>
+            <span>Chat trực tiếp</span>
         </button>
-    </div>
-
-    <!-- Chat Modal -->
-    <div class="chat-modal" id="chat-modal" aria-hidden="true" role="dialog" aria-label="Hộp thoại hỗ trợ">
-        <div class="chat-overlay" id="chat-overlay"></div>
-        <div class="chat-card" role="document">
-            <div class="chat-header">
-                <div class="chat-brand">
-                    <span class="chat-avatar">Z</span>
-                    <div>
-                        <strong>HỒI XUÂN SOLAR</strong>
-                    </div>
-                </div>
-                <button class="chat-close" id="chat-close" aria-label="Đóng">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="chat-body">
-                <div class="chat-options" id="chat-options">
-                    <h3>Xin chào!</h3>
-                    <p>Rất vui khi được hỗ trợ bạn</p>
-                    <p class="chat-note">Bắt đầu trò chuyện nhanh. Thông tin trò chuyện chỉ lưu trong trình duyệt.</p>
-                    <div class="chat-actions">
-                        <a id="chat-zalo" class="chat-btn chat-btn-primary" href="https://zalo.me/0819648999" target="_blank" rel="noopener">
-                            Chat bằng Zalo
-                        </a>
-                        <button id="chat-quick" class="chat-btn chat-btn-secondary" type="button">
-                            Chat nhanh
-                        </button>
-                    </div>
-                </div>
-                <div class="chat-convo" id="chat-convo" hidden>
-                    <div class="chat-messages" id="chat-messages">
-                        <div class="msg incoming">Xin chào! Hồi Xuân Solar rất vui được hỗ trợ bạn.</div>
-                    </div>
-                    <form class="chat-input" id="chat-form">
-                        <button class="chat-icon" type="button" aria-label="Đính kèm"><i class="fas fa-paperclip"></i></button>
-                        <input id="chat-text" type="text" placeholder="Nhập tin nhắn, nhấn Enter để gửi..." />
-                        <button class="chat-icon" type="button" aria-label="Emoji"><i class="far fa-smile"></i></button>
-                        <button class="chat-send" type="submit" aria-label="Gửi"><i class="fas fa-paper-plane"></i></button>
-                    </form>
-                    <button class="chat-back" id="chat-back" type="button">← Trở lại</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Support Panel (like sample) -->
-    <div class="support-panel" id="support-panel" aria-hidden="true">
-        <div class="support-header">
-            <span>Hỗ Trợ Trực Tuyến</span>
-            <button class="support-close" id="support-close" aria-label="Đóng">×</button>
-        </div>
-        <div class="support-body">
-            <a href="#" id="support-live" class="support-item">
-                <div class="support-icon"><i class="fas fa-comments"></i></div>
-                <div>
-                    <div class="support-title">Chat Trực Tiếp</div>
-                    <div class="support-desc">Nhắn tin ngay với chúng tôi</div>
-                </div>
-            </a>
-            <a href="https://zalo.me/0819648999" target="_blank" rel="noopener" class="support-item">
-                <div class="support-icon zalo">Z</div>
-                <div>
-                    <div class="support-title">Chat qua Zalo</div>
-                    <div class="support-desc">Liên hệ qua Zalo OA</div>
-                </div>
-            </a>
-            <div class="support-call">
-                <div class="support-call-title">Hoặc gọi ngay:</div>
-                <a href="tel:0983106839" class="support-number"><i class="fas fa-phone"></i> 098.310.6839</a>
-                <a href="tel:0819648999" class="support-number"><i class="fas fa-phone"></i> 081.964.8999</a>
-            </div>
-        </div>
     </div>
 
     <!-- Floating Call Button -->
     <a class="float-call" href="tel:0983106839" aria-label="Gọi hotline">
         <i class="fas fa-phone"></i>
     </a>
+
+    <!-- Direct Chat Modal -->
+    <div class="direct-chat" id="directChat">
+        <div class="direct-chat-header">
+            <h4>Chat với chúng tôi</h4>
+            <button class="close-chat" id="closeChat">&times;</button>
+        </div>
+        <div class="direct-chat-body" id="chatMessages">
+            <div class="welcome-message">
+                Xin chào! Chúng tôi có thể giúp gì cho bạn?
+            </div>
+        </div>
+        <form class="direct-chat-form" id="chatForm">
+            <input type="text" placeholder="Nhập tin nhắn..." required>
+            <button type="submit" aria-label="Gửi tin nhắn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+        <div class="chat-status" id="chatStatus"></div>
+    </div>
+
+    <!-- Socket.IO Client Script -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </body>
 </html>
