@@ -5,6 +5,33 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    line-height: 1.6;
+    color: #0f172a;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: #f5fbff;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+}
+
 /* Chat & Call Buttons */
 .float-chat,
 .float-call {
@@ -33,16 +60,6 @@
     bottom: 20px;
     background: #10b981;
     text-decoration: none;
-}
-
-.float-chat {
-    background: #0ea5e9;
-    border: none;
-    cursor: pointer;
-}
-
-.float-call {
-    background: #10b981;
 }
 
 .float-chat:hover,
