@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initProjectsCarousel();
     initChat();
     initLogoFallback();
+    initLoginModal();
 });
 
 // Navigation functionality
@@ -91,6 +92,59 @@ function initNavigation() {
     });
 }
 
+// Login modal behaviors
+function initLoginModal() {
+    const openLogin = document.getElementById('openLogin');
+    const loginModal = document.getElementById('loginModal');
+    const loginBackdrop = document.getElementById('loginBackdrop');
+    const closeLogin = document.getElementById('closeLogin');
+    const tabs = document.querySelectorAll('.login-tab');
+    const panels = document.querySelectorAll('.login-panel');
+    const guestForm = document.getElementById('guestLogin');
+
+    if (!openLogin || !loginModal) return;
+
+    // Open
+    openLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginModal.classList.add('show');
+    });
+
+    // Close
+    const close = () => loginModal.classList.remove('show');
+    loginBackdrop?.addEventListener('click', close);
+    closeLogin?.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') close();
+    });
+
+    // Tabs
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            const target = tab.getAttribute('data-tab');
+            document.querySelector(`.login-panel[data-panel="${target}"]`)?.classList.add('active');
+        });
+    });
+
+    // Guest login
+    guestForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = (document.getElementById('guestName')?.value || '').trim();
+        const phone = (document.getElementById('guestPhone')?.value || '').trim();
+        if (!name || !phone) return;
+        try {
+            localStorage.setItem('guestInfo', JSON.stringify({ name, phone, ts: Date.now() }));
+            showNotification('Đăng nhập khách thành công. Bạn có thể bắt đầu chat.', 'success');
+            loginModal.classList.remove('show');
+            // Optionally open direct chat
+            document.getElementById('directChat')?.classList.add('show');
+        } catch {}
+    });
+}
+
 // Removed conflicting support panel function
 
 // Replace missing logo.png with inline SVG fallback
@@ -140,6 +194,8 @@ function initChat() {
     const closeChat = document.getElementById('closeChat');
     const chatForm = document.getElementById('chatForm');
     const chatMessages = document.getElementById('chatMessages');
+    const chatStatus = document.getElementById('chatStatus');
+    let socket;
 
     // Toggle chat popup
     floatChat.addEventListener('click', () => {
@@ -168,6 +224,27 @@ function initChat() {
         directChat.classList.remove('show');
     });
 
+    // Initialize socket when direct chat opens first time
+    function ensureSocket() {
+        if (!socket) {
+            socket = io('/', { path: '/api/socket' });
+            socket.on('connect', () => {
+                if (chatStatus) chatStatus.textContent = 'Đã kết nối';
+            });
+            socket.on('disconnect', () => {
+                if (chatStatus) chatStatus.textContent = 'Mất kết nối, đang thử lại...';
+            });
+            // Receive admin reply
+            socket.on('server-message', (reply) => {
+                const replyMsg = document.createElement('div');
+                replyMsg.className = 'msg-reply';
+                replyMsg.textContent = reply.message;
+                chatMessages.appendChild(replyMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        }
+    }
+
     // Handle chat form submission
     chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -175,6 +252,7 @@ function initChat() {
         const message = input.value.trim();
         
         if (message) {
+            ensureSocket();
             // Add user message
             const userMsg = document.createElement('div');
             userMsg.className = 'msg-user';
@@ -183,17 +261,13 @@ function initChat() {
             
             // Clear input
             input.value = '';
-            
-            // Auto reply after a small delay
-            setTimeout(() => {
-                const replyMsg = document.createElement('div');
-                replyMsg.className = 'msg-reply';
-                replyMsg.textContent = 'Cảm ơn bạn đã liên hệ. Chúng tôi sẽ phản hồi sớm nhất có thể!';
-                chatMessages.appendChild(replyMsg);
-                
-                // Scroll to bottom
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 1000);
+
+            // Emit to server
+            try {
+                socket.emit('client-message', message);
+            } catch {}
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
     });
 }

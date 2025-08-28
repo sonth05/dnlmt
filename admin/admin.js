@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         socket.on('new-user', handleNewUser);
         socket.on('user-disconnected', handleUserDisconnect);
-        socket.on('chat-message', handleIncomingMessage);
+        socket.on('new-message', handleIncomingMessage);
         
         // Load initial data
         loadActiveChats();
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = input.value.trim();
         
         if (message && currentUser) {
-            socket.emit('admin-message', {
+            socket.emit('admin-reply', {
                 userId: currentUser,
                 message: message,
                 timestamp: new Date()

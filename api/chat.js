@@ -12,8 +12,15 @@ module.exports = async (req, res) => {
       await client.connect();
       const db = client.db('solar-chat');
       const chats = db.collection('chats');
-      
-      const history = await chats.find().sort({ timestamp: -1 }).limit(50).toArray();
+      const { userId, limit } = req.query || {};
+      const query = {};
+      if (userId) query.userId = userId;
+      const lim = Math.min(parseInt(limit || '50', 10) || 50, 200);
+      const history = await chats
+        .find(query)
+        .sort({ timestamp: -1 })
+        .limit(lim)
+        .toArray();
       res.status(200).json(history);
       
     } catch (err) {

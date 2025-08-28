@@ -7,7 +7,7 @@ let io;
 
 module.exports = async (req, res) => {
   if (!io) {
-    io = new Server(req.socket.server);
+    io = new Server(req.socket.server, { path: '/api/socket' });
     
     io.on('connection', async (socket) => {
       const client = new MongoClient(MONGODB_URI);

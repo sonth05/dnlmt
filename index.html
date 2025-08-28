@@ -32,6 +32,7 @@
                 <li><a href="#products" class="nav-link">SẢN PHẨM</a></li>
                 <li><a href="#projects" class="nav-link">DỰ ÁN</a></li>
                 <li><a href="#contact" class="nav-link">LIÊN HỆ</a></li>
+                <li><a href="#" class="nav-link" id="openLogin">ĐĂNG NHẬP</a></li>
                 <li class="nav-hotline"><a href="tel:0983106839" class="nav-link">Hotline: 098 310 6839</a></li>
             </ul>
             
@@ -367,9 +368,9 @@
 
     <!-- Chat Popup -->
     <div class="chat-popup" id="chatPopup">
-        <a href="https://oa.zalo.me/0983106839" target="_blank" rel="noopener" class="chat-option">
+        <a href="https://zalo.me/0983106839" target="_blank" rel="noopener" class="chat-option">
             <i class="fab fa-facebook-messenger"></i>
-            <span>Chat qua Zalo OA</span>
+            <span>Chat qua Zalo</span>
         </a>
         <button class="chat-option" id="directChatBtn">
             <i class="fas fa-comments"></i>
@@ -400,6 +401,38 @@
             </button>
         </form>
         <div class="chat-status" id="chatStatus"></div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="login-modal" id="loginModal" aria-hidden="true">
+        <div class="login-modal-backdrop" id="loginBackdrop"></div>
+        <div class="login-modal-dialog" role="dialog" aria-labelledby="loginTitle" aria-modal="true">
+            <div class="login-modal-header">
+                <h4 id="loginTitle">Đăng nhập</h4>
+                <button class="close-login" id="closeLogin" aria-label="Đóng">&times;</button>
+            </div>
+            <div class="login-modal-body">
+                <div class="login-tabs">
+                    <button class="login-tab active" data-tab="guest">Khách</button>
+                    <button class="login-tab" data-tab="admin">Admin</button>
+                </div>
+                <div class="login-panels">
+                    <form id="guestLogin" class="login-panel active" data-panel="guest">
+                        <div class="form-group">
+                            <input type="text" id="guestName" name="guestName" placeholder="Họ và tên" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" id="guestPhone" name="guestPhone" placeholder="Số điện thoại" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Vào chat</button>
+                    </form>
+                    <div id="adminLogin" class="login-panel" data-panel="admin">
+                        <p>Đăng nhập quản trị để quản lý chat.</p>
+                        <a href="/admin/" class="btn btn-secondary" id="goAdmin">Đến trang Admin</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Socket.IO Client Script -->
