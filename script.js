@@ -101,11 +101,10 @@ function initLoginModal() {
     const loginModal = document.getElementById('loginModal');
     const loginBackdrop = document.getElementById('loginBackdrop');
     const closeLogin = document.getElementById('closeLogin');
-    const tabs = document.querySelectorAll('.login-tab');
-    const panels = document.querySelectorAll('.login-panel');
-    const guestForm = document.getElementById('guestLogin');
-    const adminForm = document.getElementById('adminLogin');
-    const registerForm = document.getElementById('adminRegister');
+    const unifiedForm = document.getElementById('unifiedLogin');
+    const registerForm = document.getElementById('registerForm');
+    const openRegisterBtn = document.getElementById('openRegister');
+    const backToLoginBtn = document.getElementById('backToLogin');
     const loginStatus = document.getElementById('loginStatus');
 
     if (!openLogin || !loginModal) return;
@@ -129,138 +128,78 @@ function initLoginModal() {
         if (e.key === 'Escape') close();
     });
 
-    // Tabs
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            panels.forEach(p => p.classList.remove('active'));
-            tab.classList.add('active');
-            const target = tab.getAttribute('data-tab');
-            document.querySelector(`.login-panel[data-panel="${target}"]`)?.classList.add('active');
-            clearLoginStatus();
-        });
+    // Unified login
+    // Toggle forms
+    openRegisterBtn?.addEventListener('click', () => {
+        unifiedForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        clearLoginStatus();
     });
 
-    // Guest login
-    guestForm?.addEventListener('submit', async (e) => {
+    backToLoginBtn?.addEventListener('click', () => {
+        registerForm.style.display = 'none';
+        unifiedForm.style.display = 'block';
+        clearLoginStatus();
+    });
+
+    // Admin login only
+    unifiedForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const name = (document.getElementById('guestName')?.value || '').trim();
-        const phone = (document.getElementById('guestPhone')?.value || '').trim();
-        
-        if (!name || !phone) {
-            showLoginStatus('Vui lòng điền đầy đủ thông tin', 'error');
+        const nameOrUser = (document.getElementById('loginUsername')?.value || '').trim();
+        const password = (document.getElementById('loginPassword')?.value || '').trim();
+
+        if (!nameOrUser || !password) {
+            showLoginStatus('Vui lòng nhập thông tin bắt buộc', 'error');
             return;
         }
 
         try {
             showLoginStatus('Đang xử lý...', 'info');
-            
+
+            const payload = { action: 'login', username: nameOrUser, password };
+
             const response = await fetch('/api/auth', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'guest',
-                    guestName: name,
-                    guestPhone: phone
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
-
             const data = await response.json();
 
             if (data.success) {
-                // Store token and user info
                 localStorage.setItem('authToken', data.token);
                 localStorage.setItem('userInfo', JSON.stringify(data.user));
-                
-                showLoginStatus('Đăng nhập khách thành công!', 'success');
-                
+                showLoginStatus('Đăng nhập thành công!', 'success');
                 setTimeout(() => {
                     loginModal.classList.remove('show');
-                    // Update UI to show user is logged in
                     updateLoginButton();
-                    // Optionally open direct chat
-                    document.getElementById('directChat')?.classList.add('show');
-                }, 1500);
-            } else {
-                showLoginStatus(data.error || 'Đăng nhập thất bại', 'error');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            showLoginStatus('Lỗi kết nối, vui lòng thử lại', 'error');
-        }
-    });
-
-    // Admin login
-    adminForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = (document.getElementById('adminUsername')?.value || '').trim();
-        const password = (document.getElementById('adminPassword')?.value || '').trim();
-        
-        if (!username || !password) {
-            showLoginStatus('Vui lòng điền đầy đủ thông tin', 'error');
-            return;
-        }
-
-        try {
-            showLoginStatus('Đang đăng nhập...', 'info');
-            
-            const response = await fetch('/api/auth', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'login',
-                    username: username,
-                    password: password
-                })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                // Store token and user info
-                localStorage.setItem('authToken', data.token);
-                localStorage.setItem('userInfo', JSON.stringify(data.user));
-                
-                showLoginStatus('Đăng nhập admin thành công!', 'success');
-                
-                setTimeout(() => {
-                    loginModal.classList.remove('show');
-                    // Redirect to admin panel or update UI
-                    updateLoginButton();
-                    if (data.user.role === 'admin') {
+                    if (data.user?.role === 'admin') {
                         window.location.href = '/admin/';
                     }
-                }, 1500);
+                }, 1200);
             } else {
                 showLoginStatus(data.error || 'Đăng nhập thất bại', 'error');
             }
         } catch (error) {
-            console.error('Login error:', error);
+            console.error('Unified login error:', error);
             showLoginStatus('Lỗi kết nối, vui lòng thử lại', 'error');
         }
     });
 
-    // Admin registration
+    // Registration handler
     registerForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const username = (document.getElementById('regUsername')?.value || '').trim();
         const password = (document.getElementById('regPassword')?.value || '').trim();
         const confirmPassword = (document.getElementById('regConfirmPassword')?.value || '').trim();
-        
+
         if (!username || !password || !confirmPassword) {
             showLoginStatus('Vui lòng điền đầy đủ thông tin', 'error');
             return;
         }
-
         if (password !== confirmPassword) {
             showLoginStatus('Mật khẩu xác nhận không khớp', 'error');
             return;
         }
-
         if (password.length < 6) {
             showLoginStatus('Mật khẩu phải có ít nhất 6 ký tự', 'error');
             return;
@@ -268,31 +207,19 @@ function initLoginModal() {
 
         try {
             showLoginStatus('Đang tạo tài khoản...', 'info');
-            
             const response = await fetch('/api/auth', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'register',
-                    username: username,
-                    password: password
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'register', username, password })
             });
-
             const data = await response.json();
-
             if (data.success) {
-                showLoginStatus('Tạo tài khoản admin thành công! Bạn có thể đăng nhập.', 'success');
-                
-                // Clear form
+                showLoginStatus('Tạo tài khoản thành công! Vui lòng đăng nhập.', 'success');
                 registerForm.reset();
-                
-                // Switch to admin login tab
                 setTimeout(() => {
-                    document.querySelector('[data-tab="admin"]').click();
-                }, 2000);
+                    registerForm.style.display = 'none';
+                    unifiedForm.style.display = 'block';
+                }, 1200);
             } else {
                 showLoginStatus(data.error || 'Tạo tài khoản thất bại', 'error');
             }
@@ -602,12 +529,14 @@ function initHeroSlideshow() {
     const slides = document.querySelectorAll('.hero-slideshow .slide');
     if (!slides.length) return;
 
-    // Solar-themed background images
+    // Solar-energy background images only
     const images = [
-        'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1600&q=80',
-        'https://images.unsplash.com/photo-1506466010722-395aa2bef877?auto=format&fit=crop&w=1600&q=80',
-        'https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=1600&q=80',
-        'https://images.unsplash.com/photo-1584270354949-1f9e1a0f8a6d?auto=format&fit=crop&w=1600&q=80'
+        'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1920&q=80', // solar farm
+        'https://images.unsplash.com/photo-1506466010722-395aa2bef877?auto=format&fit=crop&w=1920&q=80', // rooftop panels
+        'https://images.unsplash.com/photo-1584270354949-1f9e1a0f8a6d?auto=format&fit=crop&w=1920&q=80', // installer
+        'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1920&q=80', // panels landscape
+        'https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&w=1920&q=80', // field panels
+        'https://images.unsplash.com/photo-1556909212-d5a3c1e9f5f4?auto=format&fit=crop&w=1920&q=80'  // roof array
     ];
 
     // Preload
@@ -940,21 +869,29 @@ function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.setAttribute('role', 'alert');
-    notification.textContent = message;
+    // Add logo + text
+    notification.innerHTML = `
+        <img src="images/logo.png" alt="logo" style="width:22px;height:22px;border-radius:50%;background:#fff;object-fit:contain;flex:0 0 22px;"/>
+        <span>${message}</span>
+    `;
     
     notification.style.cssText = `
         position: fixed;
         top: 100px;
         right: 20px;
-        padding: 15px 20px;
-        border-radius: 8px;
+        padding: 12px 16px;
+        border-radius: 999px;
         color: white;
         font-weight: 500;
         z-index: 10000;
         transform: translateX(100%);
         transition: transform 0.3s ease;
-        max-width: 300px;
+        max-width: 360px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        backdrop-filter: saturate(140%);
     `;
     
     // Set background color based on type
