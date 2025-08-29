@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Điện mặt trời Hồi Xuân</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div style="padding: 50px; text-align: center;">
+        <h1>Test Page</h1>
+        <p>Kiểm tra các chức năng cơ bản</p>
+        
+        <button onclick="testLogin()" style="margin: 10px; padding: 10px 20px;">Test Login Modal</button>
+        <button onclick="testChat()" style="margin: 10px; padding: 10px 20px;">Test Chat</button>
+        <button onclick="testForm()" style="margin: 10px; padding: 10px 20px;">Test Form</button>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-modal-backdrop"></div>
+        <div class="login-modal-dialog">
+            <div class="login-modal-header">
+                <h4>Đăng nhập</h4>
+                <button class="close-login" id="closeLogin">&times;</button>
+            </div>
+            <div class="login-modal-body">
+                <div class="login-tabs">
+                    <button class="login-tab active" data-tab="guest">Khách</button>
+                    <button class="login-tab" data-tab="admin">Admin</button>
+                </div>
+                
+                <div class="login-panels">
+                    <!-- Guest Login Panel -->
+                    <div class="login-panel active" data-panel="guest">
+                        <form id="guestLogin">
+                            <div class="form-group">
+                                <label for="guestName">Họ và tên</label>
+                                <input type="text" id="guestName" placeholder="Nhập họ và tên" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="guestPhone">Số điện thoại</label>
+                                <input type="tel" id="guestPhone" placeholder="Nhập số điện thoại" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Đăng nhập khách
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Admin Login Panel -->
+                    <div class="login-panel" data-panel="admin">
+                        <form id="adminLogin">
+                            <div class="form-group">
+                                <label for="adminUsername">Tên đăng nhập</label>
+                                <input type="text" id="adminUsername" placeholder="Nhập tên đăng nhập" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminPassword">Mật khẩu</label>
+                                <input type="password" id="adminPassword" placeholder="Nhập mật khẩu" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Đăng nhập Admin
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="login-status" id="loginStatus" style="display: none;">
+                    <div class="status-message"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Direct Chat Modal -->
+    <div class="direct-chat" id="directChat">
+        <div class="direct-chat-header">
+            <h4>Chat trực tiếp</h4>
+            <button class="close-chat" id="closeChat">&times;</button>
+        </div>
+        <div class="direct-chat-body" id="chatMessages">
+            <div class="msg-reply">
+                Xin chào! Chúng tôi có thể giúp gì cho bạn?
+            </div>
+        </div>
+        <form class="direct-chat-form" id="chatForm">
+            <input type="text" placeholder="Nhập tin nhắn..." required>
+            <button type="submit">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Test functions
+        function testLogin() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.add('show');
+                console.log('Login modal opened');
+            } else {
+                console.log('Login modal not found');
+            }
+        }
+
+        function testChat() {
+            const chat = document.getElementById('directChat');
+            if (chat) {
+                chat.classList.add('show');
+                console.log('Chat modal opened');
+            } else {
+                console.log('Chat modal not found');
+            }
+        }
+
+        function testForm() {
+            const form = document.getElementById('guestLogin');
+            if (form) {
+                console.log('Form found:', form);
+                const inputs = form.querySelectorAll('input');
+                console.log('Form inputs:', inputs.length);
+            } else {
+                console.log('Form not found');
+            }
+        }
+
+        // Close modals
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('login-modal-backdrop') || 
+                e.target.classList.contains('close-login')) {
+                document.getElementById('loginModal').classList.remove('show');
+            }
+            
+            if (e.target.classList.contains('close-chat')) {
+                document.getElementById('directChat').classList.remove('show');
+            }
+        });
+
+        // Test form submission
+        document.getElementById('guestLogin')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log('Guest login form submitted');
+            alert('Form submitted successfully!');
+        });
+
+        // Test chat form
+        document.getElementById('chatForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = e.target.querySelector('input');
+            const message = input.value.trim();
+            if (message) {
+                const userMsg = document.createElement('div');
+                userMsg.className = 'msg-user';
+                userMsg.textContent = message;
+                document.getElementById('chatMessages').appendChild(userMsg);
+                input.value = '';
+                console.log('Chat message sent:', message);
+            }
+        });
+
+        console.log('Test page loaded successfully');
+    </script>
+</body>
+</html>

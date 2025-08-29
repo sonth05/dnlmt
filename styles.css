@@ -1501,12 +1501,14 @@ select:focus {
     padding: 10px 15px;
     border-radius: 15px;
     max-width: 80%;
+    word-wrap: break-word;
 }
 
 .msg-reply {
     background: #f1f5f9;
     color: #334155;
     align-self: flex-start;
+    margin-right: auto;
 }
 
 .msg-user {
@@ -1514,6 +1516,15 @@ select:focus {
     color: white;
     align-self: flex-end;
     margin-left: auto;
+}
+
+/* Direct Chat Body */
+.direct-chat-body {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    overflow-y: auto;
+    max-height: 300px;
 }
 
 /* Print styles */

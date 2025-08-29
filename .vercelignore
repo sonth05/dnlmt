@@ -1,0 +1,13 @@
+# Ignore files for Vercel deployment
+.git/
+.vscode/
+node_modules/
+*.log
+.env
+.env.local
+.env.production
+.env.development
+test.html
+SETUP.md
+AUTH_README.md
+README.md

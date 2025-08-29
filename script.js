@@ -467,32 +467,46 @@ function initChat() {
     const chatMessages = document.getElementById('chatMessages');
     let socket;
 
+    // Check if all required elements exist
+    if (!floatChat || !chatPopup || !directChat || !directChatBtn || !closeChat || !chatForm || !chatMessages) {
+        console.log('Some chat elements not found, skipping chat initialization');
+        return;
+    }
+
     // Toggle chat popup
-    floatChat.addEventListener('click', () => {
-        chatPopup.classList.toggle('show');
-        // Close direct chat if popup is being opened
-        if (chatPopup.classList.contains('show')) {
-            directChat.classList.remove('show');
-        }
-    });
+    if (floatChat && chatPopup) {
+        floatChat.addEventListener('click', () => {
+            chatPopup.classList.toggle('show');
+            // Close direct chat if popup is being opened
+            if (chatPopup.classList.contains('show')) {
+                if (directChat) directChat.classList.remove('show');
+            }
+        });
+    }
 
     // Close popup when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!chatPopup.contains(e.target) && !floatChat.contains(e.target)) {
-            chatPopup.classList.remove('show');
-        }
-    });
+    if (chatPopup && floatChat) {
+        document.addEventListener('click', (e) => {
+            if (!chatPopup.contains(e.target) && !floatChat.contains(e.target)) {
+                chatPopup.classList.remove('show');
+            }
+        });
+    }
 
     // Open direct chat
-    directChatBtn.addEventListener('click', () => {
-        directChat.classList.add('show');
-        chatPopup.classList.remove('show');
-    });
+    if (directChatBtn && directChat && chatPopup) {
+        directChatBtn.addEventListener('click', () => {
+            directChat.classList.add('show');
+            chatPopup.classList.remove('show');
+        });
+    }
 
     // Close direct chat
-    closeChat.addEventListener('click', () => {
-        directChat.classList.remove('show');
-    });
+    if (closeChat && directChat) {
+        closeChat.addEventListener('click', () => {
+            directChat.classList.remove('show');
+        });
+    }
 
             // Initialize socket when direct chat opens first time
         function ensureSocket() {
@@ -520,30 +534,36 @@ function initChat() {
         }
 
     // Handle chat form submission
-    chatForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const input = chatForm.querySelector('input');
-        const message = input.value.trim();
-        
-        if (message) {
-            ensureSocket();
-            // Add user message
-            const userMsg = document.createElement('div');
-            userMsg.className = 'msg-user';
-            userMsg.textContent = message;
-            chatMessages.appendChild(userMsg);
+    if (chatForm && chatMessages) {
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = chatForm.querySelector('input');
+            if (!input) return;
             
-            // Clear input
-            input.value = '';
+            const message = input.value.trim();
+            
+            if (message) {
+                ensureSocket();
+                // Add user message
+                const userMsg = document.createElement('div');
+                userMsg.className = 'msg-user';
+                userMsg.textContent = message;
+                chatMessages.appendChild(userMsg);
+                
+                // Clear input
+                input.value = '';
 
-            // Emit to server
-            try {
-                socket.emit('client-message', message);
-            } catch {}
-            // Scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-    });
+                // Emit to server
+                try {
+                    if (socket) socket.emit('client-message', message);
+                } catch (error) {
+                    console.log('Socket emit failed:', error);
+                }
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+    }
 }
 
 // Scroll effects
@@ -678,7 +698,10 @@ function initAnimations() {
 // Projects gallery population
 function initProjectsGallery() {
     const track = document.getElementById('projects-track');
-    if (!track) return;
+    if (!track) {
+        console.log('Projects track not found');
+        return;
+    }
 
     // Build list of local images in /images (anh1.jpg -> anh21.jpg)
     const projectImages = Array.from({ length: 21 }, (_, i) => `images/anh${i + 1}.jpg`);
