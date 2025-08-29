@@ -465,7 +465,6 @@ function initChat() {
     const closeChat = document.getElementById('closeChat');
     const chatForm = document.getElementById('chatForm');
     const chatMessages = document.getElementById('chatMessages');
-    const chatStatus = document.getElementById('chatStatus');
     let socket;
 
     // Toggle chat popup
@@ -495,26 +494,30 @@ function initChat() {
         directChat.classList.remove('show');
     });
 
-    // Initialize socket when direct chat opens first time
-    function ensureSocket() {
-        if (!socket) {
-            socket = io('/', { path: '/api/socket' });
-            socket.on('connect', () => {
-                if (chatStatus) chatStatus.textContent = 'Đã kết nối';
-            });
-            socket.on('disconnect', () => {
-                if (chatStatus) chatStatus.textContent = 'Mất kết nối, đang thử lại...';
-            });
-            // Receive admin reply
-            socket.on('server-message', (reply) => {
-                const replyMsg = document.createElement('div');
-                replyMsg.className = 'msg-reply';
-                replyMsg.textContent = reply.message;
-                chatMessages.appendChild(replyMsg);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            });
+            // Initialize socket when direct chat opens first time
+        function ensureSocket() {
+            if (!socket) {
+                try {
+                    socket = io('/', { path: '/api/socket' });
+                    socket.on('connect', () => {
+                        console.log('Socket connected');
+                    });
+                    socket.on('disconnect', () => {
+                        console.log('Socket disconnected');
+                    });
+                    // Receive admin reply
+                    socket.on('server-message', (reply) => {
+                        const replyMsg = document.createElement('div');
+                        replyMsg.className = 'msg-reply';
+                        replyMsg.textContent = reply.message;
+                        chatMessages.appendChild(replyMsg);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    });
+                } catch (error) {
+                    console.log('Socket.io not available, using fallback');
+                }
+            }
         }
-    }
 
     // Handle chat form submission
     chatForm.addEventListener('submit', (e) => {
