@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initChat();
     initLogoFallback();
     initLoginModal();
+    
+    // Check authentication status
+    checkAuthStatus();
 });
 
 // Navigation functionality
@@ -101,6 +104,9 @@ function initLoginModal() {
     const tabs = document.querySelectorAll('.login-tab');
     const panels = document.querySelectorAll('.login-panel');
     const guestForm = document.getElementById('guestLogin');
+    const adminForm = document.getElementById('adminLogin');
+    const registerForm = document.getElementById('adminRegister');
+    const loginStatus = document.getElementById('loginStatus');
 
     if (!openLogin || !loginModal) return;
 
@@ -108,10 +114,15 @@ function initLoginModal() {
     openLogin.addEventListener('click', (e) => {
         e.preventDefault();
         loginModal.classList.add('show');
+        clearLoginStatus();
     });
 
     // Close
-    const close = () => loginModal.classList.remove('show');
+    const close = () => {
+        loginModal.classList.remove('show');
+        clearLoginStatus();
+    };
+    
     loginBackdrop?.addEventListener('click', close);
     closeLogin?.addEventListener('click', close);
     document.addEventListener('keydown', (e) => {
@@ -126,23 +137,283 @@ function initLoginModal() {
             tab.classList.add('active');
             const target = tab.getAttribute('data-tab');
             document.querySelector(`.login-panel[data-panel="${target}"]`)?.classList.add('active');
+            clearLoginStatus();
         });
     });
 
     // Guest login
-    guestForm?.addEventListener('submit', (e) => {
+    guestForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = (document.getElementById('guestName')?.value || '').trim();
         const phone = (document.getElementById('guestPhone')?.value || '').trim();
-        if (!name || !phone) return;
+        
+        if (!name || !phone) {
+            showLoginStatus('Vui lòng điền đầy đủ thông tin', 'error');
+            return;
+        }
+
         try {
-            localStorage.setItem('guestInfo', JSON.stringify({ name, phone, ts: Date.now() }));
-            showNotification('Đăng nhập khách thành công. Bạn có thể bắt đầu chat.', 'success');
-            loginModal.classList.remove('show');
-            // Optionally open direct chat
-            document.getElementById('directChat')?.classList.add('show');
-        } catch {}
+            showLoginStatus('Đang xử lý...', 'info');
+            
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'guest',
+                    guestName: name,
+                    guestPhone: phone
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Store token and user info
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('userInfo', JSON.stringify(data.user));
+                
+                showLoginStatus('Đăng nhập khách thành công!', 'success');
+                
+                setTimeout(() => {
+                    loginModal.classList.remove('show');
+                    // Update UI to show user is logged in
+                    updateLoginButton();
+                    // Optionally open direct chat
+                    document.getElementById('directChat')?.classList.add('show');
+                }, 1500);
+            } else {
+                showLoginStatus(data.error || 'Đăng nhập thất bại', 'error');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            showLoginStatus('Lỗi kết nối, vui lòng thử lại', 'error');
+        }
     });
+
+    // Admin login
+    adminForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = (document.getElementById('adminUsername')?.value || '').trim();
+        const password = (document.getElementById('adminPassword')?.value || '').trim();
+        
+        if (!username || !password) {
+            showLoginStatus('Vui lòng điền đầy đủ thông tin', 'error');
+            return;
+        }
+
+        try {
+            showLoginStatus('Đang đăng nhập...', 'info');
+            
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'login',
+                    username: username,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Store token and user info
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('userInfo', JSON.stringify(data.user));
+                
+                showLoginStatus('Đăng nhập admin thành công!', 'success');
+                
+                setTimeout(() => {
+                    loginModal.classList.remove('show');
+                    // Redirect to admin panel or update UI
+                    updateLoginButton();
+                    if (data.user.role === 'admin') {
+                        window.location.href = '/admin/';
+                    }
+                }, 1500);
+            } else {
+                showLoginStatus(data.error || 'Đăng nhập thất bại', 'error');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            showLoginStatus('Lỗi kết nối, vui lòng thử lại', 'error');
+        }
+    });
+
+    // Admin registration
+    registerForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = (document.getElementById('regUsername')?.value || '').trim();
+        const password = (document.getElementById('regPassword')?.value || '').trim();
+        const confirmPassword = (document.getElementById('regConfirmPassword')?.value || '').trim();
+        
+        if (!username || !password || !confirmPassword) {
+            showLoginStatus('Vui lòng điền đầy đủ thông tin', 'error');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            showLoginStatus('Mật khẩu xác nhận không khớp', 'error');
+            return;
+        }
+
+        if (password.length < 6) {
+            showLoginStatus('Mật khẩu phải có ít nhất 6 ký tự', 'error');
+            return;
+        }
+
+        try {
+            showLoginStatus('Đang tạo tài khoản...', 'info');
+            
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'register',
+                    username: username,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showLoginStatus('Tạo tài khoản admin thành công! Bạn có thể đăng nhập.', 'success');
+                
+                // Clear form
+                registerForm.reset();
+                
+                // Switch to admin login tab
+                setTimeout(() => {
+                    document.querySelector('[data-tab="admin"]').click();
+                }, 2000);
+            } else {
+                showLoginStatus(data.error || 'Tạo tài khoản thất bại', 'error');
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            showLoginStatus('Lỗi kết nối, vui lòng thử lại', 'error');
+        }
+    });
+}
+
+// Helper functions for login
+function showLoginStatus(message, type = 'info') {
+    const loginStatus = document.getElementById('loginStatus');
+    const statusMessage = loginStatus.querySelector('.status-message');
+    
+    if (loginStatus && statusMessage) {
+        loginStatus.className = `login-status ${type}`;
+        statusMessage.textContent = message;
+        loginStatus.style.display = 'block';
+    }
+}
+
+function clearLoginStatus() {
+    const loginStatus = document.getElementById('loginStatus');
+    if (loginStatus) {
+        loginStatus.style.display = 'none';
+        loginStatus.className = 'login-status';
+    }
+}
+
+function updateLoginButton() {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    const openLogin = document.getElementById('openLogin');
+    
+    if (userInfo.id) {
+        if (userInfo.role === 'admin') {
+            openLogin.innerHTML = '<i class="fas fa-user-shield"></i> ADMIN';
+            openLogin.href = '/admin/';
+        } else {
+            openLogin.innerHTML = `<i class="fas fa-user"></i> ${userInfo.name}`;
+            openLogin.href = '#';
+            openLogin.onclick = (e) => {
+                e.preventDefault();
+                // Show user profile or logout options
+                showUserMenu();
+            };
+        }
+    } else {
+        openLogin.innerHTML = 'ĐĂNG NHẬP';
+        openLogin.href = '#';
+        openLogin.onclick = (e) => {
+            e.preventDefault();
+            document.getElementById('loginModal').classList.add('show');
+        };
+    }
+}
+
+function showUserMenu() {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    
+    // Create user menu popup
+    const menu = document.createElement('div');
+    menu.className = 'user-menu';
+    menu.innerHTML = `
+        <div class="user-menu-header">
+            <i class="fas fa-user-circle"></i>
+            <span>${userInfo.name}</span>
+        </div>
+        <div class="user-menu-body">
+            <button class="user-menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Đăng xuất
+            </button>
+        </div>
+    `;
+    
+    // Position and show menu
+    const openLogin = document.getElementById('openLogin');
+    const rect = openLogin.getBoundingClientRect();
+    
+    menu.style.cssText = `
+        position: fixed;
+        top: ${rect.bottom + 10}px;
+        right: 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        z-index: 10001;
+        min-width: 200px;
+        border: 1px solid #e5e7eb;
+    `;
+    
+    document.body.appendChild(menu);
+    
+    // Close menu when clicking outside
+    setTimeout(() => {
+        document.addEventListener('click', function closeMenu(e) {
+            if (!menu.contains(e.target) && !openLogin.contains(e.target)) {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+        });
+    }, 100);
+}
+
+function logout() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userInfo');
+    updateLoginButton();
+    
+    // Show notification
+    showNotification('Đã đăng xuất thành công', 'success');
+}
+
+// Check authentication status on page load
+function checkAuthStatus() {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        // Verify token validity here if needed
+        updateLoginButton();
+    }
 }
 
 // Removed conflicting support panel function
